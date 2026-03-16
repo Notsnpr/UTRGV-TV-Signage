@@ -6,20 +6,12 @@ const fs = require('fs');
 
 const db = require('./lib/database'); // triggers schema init on require
 
-const authRoutes      = require('./routes/auth');
-const usersRoutes     = require('./routes/users');
-const playlistsRoutes = require('./routes/playlists');
-const itemsRoutes     = require('./routes/items');
-const devicesRoutes   = require('./routes/devices');
-const schedulesRoutes = require('./routes/schedules');
-const emergencyRoutes = require('./routes/emergency');
-const mediaRoutes     = require('./routes/media');
-const overlaysRoutes  = require('./routes/overlays');
-const widgetsRoutes   = require('./routes/widgets');
-const analyticsRoutes = require('./routes/analytics');
-const auditRoutes     = require('./routes/audit');
-const settingsRoutes  = require('./routes/settings');
-const publicRoutes    = require('./routes/public');
+const authRoutes  = require('./routes/auth');
+const usersRoutes = require('./routes/users');
+const tvsRoutes   = require('./routes/tvs');
+const mediaRoutes = require('./routes/media');
+const publicRoutes = require('./routes/public');
+const auditRoutes = require('./routes/audit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,23 +48,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadsDir));
 
 // API routes
-app.use('/api/auth',         authRoutes);
-app.use('/api/admin/users',  usersRoutes);
-app.use('/api/playlists',    playlistsRoutes);
-app.use('/api/items',        itemsRoutes);
-app.use('/api/devices',      devicesRoutes);
-app.use('/api/schedules',    schedulesRoutes);
-app.use('/api/emergency',    emergencyRoutes);
-app.use('/api/media',        mediaRoutes);
-app.use('/api/overlays',     overlaysRoutes);
-app.use('/api/widgets',      widgetsRoutes);
-app.use('/api/analytics',    analyticsRoutes);
-app.use('/api/audit-logs',   auditRoutes);
-app.use('/api/settings',     settingsRoutes);
-app.use('/api/public',       publicRoutes);
+app.use('/api/auth',        authRoutes);
+app.use('/api/admin/users', usersRoutes);
+app.use('/api/tvs',         tvsRoutes);
+app.use('/api/media',       mediaRoutes);
+app.use('/api/public',      publicRoutes);
+app.use('/api/audit-logs',  auditRoutes);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`UTRGV TV Signage: http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => console.log(`UTRGV TV Signage: http://localhost:${PORT}`));
+}
 
 module.exports = app;
