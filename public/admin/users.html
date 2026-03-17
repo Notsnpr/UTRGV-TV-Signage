@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>👥 Users</h1>
+          <button id="addUserBtn" class="btn btn-primary">+ Add User</button>
+        </header>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr><th>User</th><th>Email</th><th>Role</th><th>TV Access</th><th>Created</th><th></th></tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add User Modal -->
+  <div id="addUserModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header"><h3>Add User</h3><button class="modal-close" id="closeAddUser">&times;</button></div>
+      <div class="modal-body">
+        <div class="input-group"><label>Username</label><input type="text" id="newUsername" placeholder="johndoe"></div>
+        <div class="input-group"><label>Email</label><input type="email" id="newEmail" placeholder="user@utrgv.edu"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="newPassword" placeholder="Min 6 characters" autocomplete="new-password"></div>
+        <div class="input-group">
+          <label>Role</label>
+          <select id="newRole">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelAddUser">Cancel</button>
+        <button class="btn btn-primary" id="confirmAddUser">Add User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div id="editUserModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header"><h3>Edit User</h3><button class="modal-close" id="closeEditUser">&times;</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserId">
+        <div class="input-group"><label>Username</label><input type="text" id="editUsername"></div>
+        <div class="input-group"><label>Email</label><input type="email" id="editUserEmail"></div>
+        <div class="input-group"><label>New Password (leave blank to keep)</label><input type="password" id="editPassword" autocomplete="new-password"></div>
+        <div class="input-group">
+          <label>Role</label>
+          <select id="editRole">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelEditUser">Cancel</button>
+        <button class="btn btn-primary" id="confirmEditUser">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/users.js"></script>
+</body>
+</html>

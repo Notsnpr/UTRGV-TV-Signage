@@ -58,7 +58,9 @@ router.get('/', requireAuthOrApiKey, (req, res) => {
   const admin = isUserAdmin(req.session.userId);
   const tvs = admin
     ? db.prepare(`
-        SELECT t.*, COUNT(i.id) AS itemCount
+        SELECT t.*,
+          COUNT(i.id) AS itemCount,
+          COUNT(CASE WHEN i.isActive = 1 AND (i.endAt IS NULL OR i.endAt >= datetime('now')) THEN 1 END) AS activeItemCount
         FROM tvs t
         LEFT JOIN tv_playlist_items i ON i.tvId = t.id
         GROUP BY t.id ORDER BY t.createdAt DESC

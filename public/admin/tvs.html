@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TVs - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>📺 TVs</h1>
+          <button id="addTVBtn" class="btn btn-primary admin-only" style="display:none">
+            <span class="icon">+</span> Add TV
+          </button>
+        </header>
+        <div class="tv-grid" id="tvGrid">
+          <p style="color:var(--gray-400);grid-column:1/-1">Loading...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add TV Modal -->
+  <div id="addTVModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add TV</h3>
+        <button class="modal-close" id="closeAddTV">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>Name</label>
+          <input type="text" id="tvName" placeholder="Student Center Lobby">
+        </div>
+        <div class="input-group">
+          <label>Location (optional)</label>
+          <input type="text" id="tvLocation" placeholder="Building A, Room 101">
+        </div>
+        <div class="input-group">
+          <label>Default cycle interval (seconds)</label>
+          <input type="number" id="tvInterval" value="10" min="1" max="3600">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelAddTV">Cancel</button>
+        <button class="btn btn-primary" id="confirmAddTV">Create TV</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/tvs.js"></script>
+</body>
+</html>

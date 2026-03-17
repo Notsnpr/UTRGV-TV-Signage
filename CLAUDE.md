@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # UTRGV TV Signage — approach/reference
 
 ## About this branch
@@ -58,6 +62,35 @@ data.sqlite            # Created at runtime by better-sqlite3
 - **Error shape**: `{ error: { code, message, details } }`
 - **HTTP codes**: 200 GET/PATCH, 201 POST, 204 DELETE, 400 validation, 401 unauth, 403 forbidden, 404 not found
 - **Frontend**: IIFE modules per page, `Shared` global for utilities, sidebar loaded dynamically
+- **Multer**: accessed in routes via `req.app.locals.upload` (set in `server.js`)
+- **Migrations**: add additive `ALTER TABLE` SQL strings to the `migrations` array in `database.js`
+- **Constrained enums**: `playlist_items.type` ∈ `image|video|youtube`; `widgets.type` ∈ `clock|weather|rss|date`
+
+## Implementation status
+All route files (`routes/*.js`) are stubs with `// TODO: implement routes`. Implement by consulting the reference at `/Users/snpr/Code/Test/signage/routes/`.
+
+## Helpers reference (`lib/helpers.js`)
+| Export | Purpose |
+|---|---|
+| `errorResponse(res, status, code, message, details?)` | Consistent error JSON |
+| `logAudit(userId, action, entityType, entityId, details, ip)` | Write to `audit_logs` |
+| `triggerWebhooks(event, data)` | Fire matching webhooks async |
+| `createPreviewToken(resourceId)` | In-memory token, 1hr TTL |
+| `validatePreviewToken(token)` | Returns resourceId or null |
+| `setDeviceCommand(deviceId, cmd)` | In-memory command, 60s TTL |
+| `getDeviceCommand(deviceId)` | Returns command or null (consumed) |
+| `generateToken(length?)` | Crypto random hex string |
+| `getClientIp(req)` | Respects `X-Forwarded-For` |
+
+## Middleware reference (`lib/middleware.js`)
+| Export | Purpose |
+|---|---|
+| `requireAuth` | Session userId required |
+| `requireAdmin` | Session userId + `isAdmin=1` |
+| `requireApiKey` | Bearer token lookup, sets `req.session.userId` |
+| `requireAuthOrApiKey` | Session OR Bearer token |
+| `isUserAdmin(userId)` | Boolean helper, no middleware |
+| `canAccessResource(userId, resourceId, isAdmin, table, col?)` | Ownership check |
 
 ## Reference files to consult
 - `/Users/snpr/Code/Test/signage/docs/architecture.md` — templates for every layer
