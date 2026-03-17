@@ -158,7 +158,14 @@
       tv = fresh;
       items = fresh.items;
       tvNameEl.textContent = tv.name;
-      if (isPlaying) { currentIndex = 0; playItem(0); }
+      if (isPlaying) {
+        currentIndex = 0;
+        playItem(0);
+      } else if (items.length) {
+        errorEl.classList.add('hidden');
+        isPlaying = true;
+        playItem(0);
+      }
     }
   }
 
@@ -190,14 +197,14 @@
     items = tv.items;
     tvNameEl.textContent = tv.name;
 
+    setInterval(refreshTV, 30000);
+
     if (!items.length) { showError('No content', 'This TV has no active items.'); return; }
 
     updateItemInfo();
     isPlaying = true;
     overlay.classList.add('hidden');
     playItem(0);
-
-    setInterval(refreshTV, 30000);
   }
 
   init();
