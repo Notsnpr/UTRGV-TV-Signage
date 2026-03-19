@@ -86,7 +86,7 @@ router.post('/', requireAdmin, (req, res) => {
 
   const { name, slug: rawSlug, location, cycleIntervalSeconds, isActive, showEmergency } = result.data;
   const slug = uniqueSlug(rawSlug || slugify(name));
-  const displayToken = generateToken(32);
+  const displayToken = generateToken(4);
 
   const info = db.prepare(
     'INSERT INTO tvs (name, slug, location, cycleIntervalSeconds, isActive, showEmergency, displayToken) VALUES (?, ?, ?, ?, ?, ?, ?)'
