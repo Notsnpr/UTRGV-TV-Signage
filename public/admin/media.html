@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Library - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>🖼️ Media Library</h1>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" id="addYouTubeBtn">+ YouTube</button>
+            <label class="btn btn-primary btn-sm" style="cursor:pointer">
+              <span class="icon">↑</span> Upload
+              <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none">
+            </label>
+          </div>
+        </header>
+
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📁</div>
+          <p>Drag & drop files here, or <strong>click to upload</strong></p>
+          <p style="margin-top:8px;font-size:12px">Images and videos up to 500MB</p>
+        </div>
+
+        <div class="media-grid" id="mediaGrid" style="margin-top:24px">
+          <p style="color:var(--gray-400);grid-column:1/-1;padding:48px;text-align:center">Loading...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- YouTube modal -->
+  <div id="youtubeModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header"><h3>Add YouTube Video</h3><button class="modal-close" id="closeYouTube">&times;</button></div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>YouTube URL</label>
+          <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="input-group">
+          <label>Title (optional)</label>
+          <input type="text" id="youtubeTitle" placeholder="Video title">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelYouTube">Cancel</button>
+        <button class="btn btn-primary" id="confirmYouTube">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/media.js"></script>
+</body>
+</html>

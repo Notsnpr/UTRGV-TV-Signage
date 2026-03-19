@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Broadcast - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .emergency-panel {
+      border: 2px solid var(--border);
+      transition: border-color 0.3s;
+    }
+    .emergency-panel.active {
+      border-color: #dc2626;
+      animation: pulse-border 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: #dc2626; box-shadow: 0 0 0 0 rgba(220,38,38,0.3); }
+      50% { border-color: #ef4444; box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+    }
+    .emergency-status-banner {
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    .emergency-status-banner.inactive {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+    }
+    .emergency-status-banner.active-alert {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .alert-details {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .alert-details .alert-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .alert-details .alert-message {
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+    .badge-type {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-fire     { background: #fee2e2; color: #dc2626; }
+    .badge-weather  { background: #fef9c3; color: #854d0e; }
+    .badge-security { background: #ede9fe; color: #6d28d9; }
+    .badge-evacuation { background: #fef3c7; color: #92400e; }
+    .badge-custom   { background: #e0f2fe; color: #075985; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>🚨 Emergency Broadcast</h1>
+        </header>
+
+        <!-- Emergency Panel -->
+        <div class="card emergency-panel" id="emergencyPanel">
+          <div id="statusBanner" class="emergency-status-banner inactive">⚠ No Active Alert</div>
+
+          <!-- Form (shown when no active alert) -->
+          <div id="activateForm">
+            <div class="input-group">
+              <label>Alert Type</label>
+              <select id="alertType">
+                <option value="fire">🔥 Fire</option>
+                <option value="weather">🌪 Weather</option>
+                <option value="security">🔒 Security</option>
+                <option value="evacuation">🚪 Evacuation</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Title</label>
+              <input type="text" id="alertTitle" placeholder="Alert title...">
+            </div>
+            <div class="input-group">
+              <label>Message</label>
+              <textarea id="alertMessage" rows="3" placeholder="Alert message shown on all TVs..."></textarea>
+            </div>
+            <button id="activateBtn" class="btn btn-danger">🚨 Activate Emergency Alert</button>
+          </div>
+
+          <!-- Active state (shown when alert is active) -->
+          <div id="activeState" style="display:none">
+            <div class="alert-details">
+              <div class="alert-title" id="activeTitle"></div>
+              <div class="alert-message" id="activeMessage"></div>
+              <span id="activeTypeBadge" class="badge-type"></span>
+              <span style="color:var(--text-secondary);font-size:0.85rem;margin-left:10px" id="activeTime"></span>
+            </div>
+            <button id="deactivateBtn" class="btn btn-success">✓ Clear Emergency Alert</button>
+          </div>
+        </div>
+
+        <!-- Alert History -->
+        <div class="card">
+          <div class="card-header" style="padding:16px 20px 0;font-weight:600;font-size:0.95rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Alert History</div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Type</th><th>Title</th><th>Message</th><th>Time</th><th></th></tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr><td colspan="5" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/emergency.js"></script>
+</body>
+</html>

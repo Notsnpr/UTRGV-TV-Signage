@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>Dashboard</h1>
+        </header>
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card"><div class="stat-label">Total TVs</div><div class="stat-value" id="statTVs">—</div></div>
+          <div class="stat-card"><div class="stat-label">Active TVs</div><div class="stat-value" id="statActiveTVs">—</div></div>
+          <div class="stat-card"><div class="stat-label">Media Assets</div><div class="stat-value" id="statMedia">—</div></div>
+          <div class="stat-card admin-only" style="display:none"><div class="stat-label">Users</div><div class="stat-value" id="statUsers">—</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Activity</h3>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>User</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="auditBody">
+              <tr><td colspan="4" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Log - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>📋 Audit Log</h1>
+        </header>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr><th>Action</th><th>Entity</th><th>User</th><th>IP</th><th>Time</th></tr>
+            </thead>
+            <tbody id="auditBody">
+              <tr><td colspan="5" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:16px">
+          <button class="btn btn-secondary btn-sm" id="prevBtn" disabled>← Prev</button>
+          <span id="pageInfo" style="line-height:32px;font-size:13px;color:var(--gray-500)"></span>
+          <button class="btn btn-secondary btn-sm" id="nextBtn" disabled>Next →</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/audit.js"></script>
+</body>
+</html>

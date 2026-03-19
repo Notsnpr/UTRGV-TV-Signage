@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Detail - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <div class="detail-header">
+          <a href="/admin/tvs.html" class="detail-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to TVs
+          </a>
+          <div class="detail-title">
+            <h1 id="tvTitle">Loading...</h1>
+            <p id="tvSubtitle"></p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a id="playerLink" href="#" target="_blank" class="btn btn-outline btn-sm">Open Player</a>
+            <button id="editTVBtn" class="btn btn-secondary btn-sm admin-only" style="display:none">Edit</button>
+            <button id="deleteTVBtn" class="btn btn-danger-outline btn-sm admin-only" style="display:none">Delete</button>
+          </div>
+        </div>
+
+        <!-- Display token -->
+        <div class="card admin-only" style="display:none;margin-bottom:24px">
+          <div class="card-header"><h3>Display Token</h3></div>
+          <div style="padding:16px 24px">
+            <div class="token-box">
+              <span class="token-value" id="displayToken">—</span>
+              <button class="btn-icon" id="copyTokenBtn" title="Copy player URL">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Playlist items -->
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <h3>Playlist Items</h3>
+            <button class="btn btn-primary btn-sm" id="addItemBtn">+ Add Item</button>
+          </div>
+          <div style="padding:16px 24px">
+            <div class="items-list" id="itemsList">
+              <p style="color:var(--gray-400);text-align:center;padding:24px">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- User access (admin only) -->
+        <div class="card admin-only" style="display:none">
+          <div class="card-header">
+            <h3>User Access</h3>
+            <button class="btn btn-secondary btn-sm" id="grantAccessBtn">+ Grant Access</button>
+          </div>
+          <table class="data-table" id="accessTable">
+            <thead>
+              <tr><th>User</th><th>Email</th><th>Granted</th><th></th></tr>
+            </thead>
+            <tbody id="accessBody">
+              <tr><td colspan="4" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit TV modal -->
+  <div id="editTVModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header"><h3>Edit TV</h3><button class="modal-close" id="closeEditTV">&times;</button></div>
+      <div class="modal-body">
+        <div class="input-group"><label>Name</label><input type="text" id="editName"></div>
+        <div class="input-group"><label>Location</label><input type="text" id="editLocation"></div>
+        <div class="input-group"><label>Cycle interval (seconds)</label><input type="number" id="editInterval" min="1" max="3600"></div>
+        <label class="checkbox-row"><input type="checkbox" id="editIsActive"> Active</label>
+        <label class="checkbox-row"><input type="checkbox" id="editShowEmergency"> Show emergency broadcasts</label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelEditTV">Cancel</button>
+        <button class="btn btn-primary" id="confirmEditTV">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add item modal -->
+  <div id="addItemModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3>Add Playlist Item</h3><button class="modal-close" id="closeAddItem">&times;</button></div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>Duration (seconds, 1–60 — leave blank to use TV default)</label>
+          <input type="number" id="itemDuration" placeholder="TV default" min="1" max="60">
+        </div>
+        <div class="input-group">
+          <label>Start at (optional, ISO datetime)</label>
+          <input type="datetime-local" id="itemStartAt">
+        </div>
+        <div class="input-group">
+          <label>End at (optional, ISO datetime)</label>
+          <input type="datetime-local" id="itemEndAt">
+        </div>
+        <label class="checkbox-row" style="margin-bottom:16px">
+          <input type="checkbox" id="itemIsActive" checked> Active (uncheck to add as inactive)
+        </label>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px">Select a media asset:</p>
+        <div class="media-grid" id="modalMediaGrid" style="max-height:300px;overflow-y:auto">
+          <p style="color:var(--gray-400);grid-column:1/-1">Loading media...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelAddItem">Cancel</button>
+        <button class="btn btn-primary" id="confirmAddItem">Add Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grant access modal (admin) -->
+  <div id="grantAccessModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header"><h3>Grant TV Access</h3><button class="modal-close" id="closeGrantAccess">&times;</button></div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>Select User</label>
+          <select id="grantUserId"><option value="">— select user —</option></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelGrantAccess">Cancel</button>
+        <button class="btn btn-primary" id="confirmGrantAccess">Grant Access</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/shared.js"></script>
+  <script src="/admin/js/tv-detail.js"></script>
+</body>
+</html>

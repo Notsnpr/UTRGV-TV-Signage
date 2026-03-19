@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UTRGV TV Player</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; font-family: system-ui, sans-serif; }
+
+    #player { width: 100vw; height: 100vh; position: relative; background: #0a0a0a; }
+    #player img, #player video, #player iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: contain; border: none; opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    #player img.visible, #player video.visible, #player iframe.visible { opacity: 1; }
+    #player .exiting { opacity: 0 !important; }
+
+    #overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, rgba(102,126,234,.95) 0%, rgba(118,75,162,.95) 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: white; z-index: 1000; transition: opacity .5s ease-out;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+    .overlay-content { text-align: center; }
+    .overlay-icon { font-size: 80px; margin-bottom: 24px; }
+    #overlay h1 { font-size: 42px; font-weight: 700; margin-bottom: 12px; }
+    #overlay p { font-size: 18px; opacity: .9; margin-bottom: 40px; }
+    .start-btn {
+      padding: 18px 48px; font-size: 18px; font-weight: 600; font-family: inherit;
+      background: white; color: #667eea; border: none; border-radius: 50px;
+      cursor: pointer; transition: all .3s; box-shadow: 0 10px 40px rgba(0,0,0,.3);
+    }
+    .start-btn:hover { transform: translateY(-3px) scale(1.05); }
+
+    #loading {
+      position: fixed; inset: 0; background: #0a0a0a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000;
+    }
+    #loading.hidden { display: none; }
+    .loader {
+      width: 60px; height: 60px; border: 4px solid rgba(255,255,255,.1);
+      border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: #888; font-size: 14px; }
+
+    #error {
+      position: fixed; inset: 0; background: #0a0a0a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px; z-index: 2000;
+    }
+    #error.hidden { display: none; }
+    .error-icon { font-size: 64px; margin-bottom: 24px; }
+    #error h2 { color: #ef4444; font-size: 24px; margin-bottom: 12px; }
+    #error p { color: #666; font-size: 16px; max-width: 400px; }
+
+    #progress {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 4px;
+      background: rgba(255,255,255,.1); z-index: 100; opacity: 0; transition: opacity .3s;
+    }
+    #progress.visible { opacity: 1; }
+    #progressBar {
+      height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0; transition: width .1s linear;
+    }
+
+    #tvInfo {
+      position: fixed; top: 24px; left: 24px;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(10px);
+      padding: 12px 20px; border-radius: 12px; color: white; font-size: 14px;
+      opacity: 0; transform: translateY(-10px); transition: all .3s; z-index: 50;
+    }
+    #tvInfo.visible { opacity: 1; transform: translateY(0); }
+    #tvInfo h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    #tvInfo p { opacity: .7; font-size: 12px; }
+
+    #emergencyAlert {
+      position: fixed; inset: 0; z-index: 500;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px;
+    }
+    #emergencyAlert.hidden { display: none; }
+    #emergencyTitle { font-size: 48px; font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
+    #emergencyMessage { font-size: 28px; font-weight: 400; opacity: .9; max-width: 800px; }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+
+  <div id="progress"><div id="progressBar"></div></div>
+
+  <div id="tvInfo">
+    <h3 id="tvName">TV</h3>
+    <p id="itemInfo">Loading...</p>
+  </div>
+
+  <div id="overlay">
+    <div class="overlay-content">
+      <div class="overlay-icon">📺</div>
+      <h1>UTRGV TV</h1>
+      <p>Click to start fullscreen playback</p>
+      <button class="start-btn" id="startBtn">Start Playback</button>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div class="loader"></div>
+    <p>Loading...</p>
+  </div>
+
+  <div id="emergencyAlert" class="hidden">
+    <div id="emergencyTitle"></div>
+    <div id="emergencyMessage"></div>
+  </div>
+
+  <div id="error" class="hidden">
+    <div class="error-icon">😕</div>
+    <h2>Something went wrong</h2>
+    <p id="errorMessage">Unable to load TV content</p>
+  </div>
+
+  <script src="/player.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
