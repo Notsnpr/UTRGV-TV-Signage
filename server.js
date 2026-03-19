@@ -20,7 +20,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Uploads directory
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const upload = multer({
@@ -39,12 +39,13 @@ const upload = multer({
 });
 app.locals.upload = upload; // routes access via req.app.locals.upload
 
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'change-me-in-production',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }
+  cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
