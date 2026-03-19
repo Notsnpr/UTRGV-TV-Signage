@@ -118,11 +118,11 @@ All API routes return `{ error: { code, message } }` on failure.
 | PATCH | `/api/tvs/:id/items/:itemId` | session | Update playlist item |
 | DELETE | `/api/tvs/:id/items/:itemId` | session | Remove playlist item |
 | GET | `/api/media` | session | List media assets |
-| POST | `/api/media` | session | Upload media |
+| POST | `/api/media/upload` | session | Upload media |
 | DELETE | `/api/media/:id` | session | Delete media |
 | POST | `/api/emergency/activate` | admin | Activate emergency alert |
 | POST | `/api/emergency/deactivate` | admin | Deactivate alert |
-| GET | `/api/emergency/status` | session | Current alert status |
+| GET | `/api/emergency/current` | session | Current alert status |
 | GET | `/api/settings/api-keys` | admin | List API keys |
 | POST | `/api/settings/api-keys` | admin | Create API key |
 | DELETE | `/api/settings/api-keys/:id` | admin | Revoke API key |
