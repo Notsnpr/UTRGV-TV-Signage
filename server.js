@@ -12,6 +12,8 @@ const tvsRoutes   = require('./routes/tvs');
 const mediaRoutes = require('./routes/media');
 const publicRoutes = require('./routes/public');
 const auditRoutes = require('./routes/audit');
+const emergencyRoutes = require('./routes/emergency');
+const settingsRoutes  = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -54,6 +56,8 @@ app.use('/api/tvs',         tvsRoutes);
 app.use('/api/media',       mediaRoutes);
 app.use('/api/public',      publicRoutes);
 app.use('/api/audit-logs',  auditRoutes);
+app.use('/api/emergency',   emergencyRoutes);
+app.use('/api/settings',   settingsRoutes);
 
 if (require.main === module) {
   app.listen(PORT, '0.0.0.0', () => console.log(`UTRGV TV Signage: http://localhost:${PORT}`));

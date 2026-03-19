@@ -1,9 +1,9 @@
 /* UTRGV TV Signage - Admin Styles */
 :root {
-  --primary: #667eea;
-  --primary-dark: #5a67d8;
-  --secondary: #764ba2;
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary: #CB4900;
+  --primary-dark: #a63c00;
+  --secondary: #4C4A4F;
+  --gradient: linear-gradient(135deg, #CB4900 0%, #a63c00 100%);
   --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -34,7 +34,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Red Hat Display', system-ui, -apple-system, sans-serif;
   background: var(--gray-50);
   color: var(--gray-800);
   line-height: 1.5;
@@ -52,7 +52,7 @@ body {
   position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
 }
 .sidebar-header { padding: 24px; border-bottom: 1px solid var(--gray-100); }
-.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
 .logo-icon { font-size: 28px; }
 .logo-text {
   font-size: 18px; font-weight: 700;
@@ -318,10 +318,48 @@ body {
 /* ── Two column layout ── */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+
+/* ── Mobile header bar ── */
+.mobile-header {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 56px; padding: 0 16px;
+  background: var(--gradient); color: white;
+  align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow-md);
+}
+.hamburger {
+  background: none; border: none; color: white; cursor: pointer;
+  padding: 8px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 44px; min-height: 44px;
+}
+.mobile-logo { font-weight: 700; font-size: 16px; letter-spacing: -0.5px; }
+.mobile-logo span { font-weight: 400; opacity: 0.85; }
+
+/* ── Sidebar overlay backdrop ── */
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; z-index: 99;
+  background: rgba(0,0,0,.4);
+}
+body.sidebar-open .sidebar-overlay { display: block; }
+body.sidebar-open .sidebar { transform: translateX(0) !important; }
+
+/* ── Mobile breakpoint ── */
 @media (max-width: 768px) {
+  .mobile-header { display: flex; }
+  .main-content { margin-left: 0; padding-top: 72px; width: 100%; overflow-x: hidden; }
+  .page-container { padding: 16px; box-sizing: border-box; }
+  .sidebar { transform: translateX(-100%); transition: transform .25s ease; }
   .two-col, .three-col { grid-template-columns: 1fr; }
-  .sidebar { transform: translateX(-100%); }
-  .main-content { margin-left: 0; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .data-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+  .btn { min-height: 44px; padding: 10px 16px; }
+  .btn-sm { min-height: 36px; }
+  .modal-content { width: 95%; padding: 24px 20px; }
+  .modal-lg { max-width: 95%; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header > .btn { width: 100%; justify-content: center; }
 }
 
 /* ── Token display ── */

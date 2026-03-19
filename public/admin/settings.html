@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - UTRGV TV Signage</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .settings-section { margin-bottom: 24px; }
+    .key-list { list-style: none; padding: 0; margin: 0 0 16px 0; }
+    .key-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f9fafb; border-radius: 8px; margin-bottom: 8px; gap: 12px; }
+    .key-item-info { flex: 1; min-width: 0; }
+    .key-prefix { font-family: monospace; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+    .webhook-list { margin-bottom: 16px; }
+    .webhook-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+    .webhook-item:last-child { border-bottom: none; }
+    .webhook-url { flex: 1; font-family: monospace; font-size: 0.85rem; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .toggle-switch { position: relative; width: 44px; height: 22px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #d1d5db; border-radius: 22px; transition: 0.3s; }
+    .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+    .toggle-switch input:checked + .toggle-slider { background: #667eea; }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #6b7280; }
+    .info-value { font-weight: 500; }
+    .add-webhook-row { display: flex; gap: 8px; }
+    .add-webhook-row input { flex: 1; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-container">
+        <header class="page-header">
+          <h1>Settings</h1>
+        </header>
+
+        <!-- API Keys -->
+        <div class="card settings-section">
+          <h3 style="margin-bottom:8px;">API Keys</h3>
+          <p style="color:#6b7280;font-size:0.875rem;margin-bottom:16px;">Named keys for external integrations. The full key is shown only once at creation.</p>
+          <ul id="apiKeysList" class="key-list">
+            <li style="color:#9ca3af;">Loading...</li>
+          </ul>
+          <button id="createKeyBtn" class="btn btn-primary">+ Create Key</button>
+        </div>
+
+        <!-- Webhooks -->
+        <div class="card settings-section">
+          <h3 style="margin-bottom:8px;">Webhooks</h3>
+          <p style="color:#6b7280;font-size:0.875rem;margin-bottom:16px;">Receive HTTP POST notifications for emergency events.</p>
+          <div id="webhooksList" class="webhook-list">
+            <p style="color:#9ca3af;">Loading...</p>
+          </div>
+          <div class="add-webhook-row">
+            <input type="text" id="webhookName" placeholder="Name (e.g. Slack)" class="input">
+            <input type="url" id="webhookUrl" placeholder="https://your-service.com/webhook" class="input">
+            <button id="addWebhookBtn" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="card settings-section">
+          <h3 style="margin-bottom:8px;">System Information</h3>
+          <div class="info-row"><span class="info-label">Version</span><span class="info-value" id="sysVersion">-</span></div>
+          <div class="info-row"><span class="info-label">Database</span><span class="info-value" id="sysDb">-</span></div>
+          <div class="info-row"><span class="info-label">Uptime</span><span class="info-value" id="sysUptime">-</span></div>
+          <div class="info-row"><span class="info-label">Node.js</span><span class="info-value" id="sysNode">-</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create API Key Modal -->
+  <div id="createKeyModal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create API Key</h3>
+        <button class="modal-close" id="closeCreateKeyModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>Key Name</label>
+          <input type="text" id="keyName" class="input" placeholder="e.g. My Integration">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelCreateKeyBtn">Cancel</button>
+        <button class="btn btn-primary" id="confirmCreateKeyBtn">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Show Key Modal -->
+  <div id="showKeyModal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>API Key Created</h3>
+        <button class="modal-close" id="closeShowKeyModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#dc2626;margin-bottom:12px;font-size:0.875rem;">Copy this key now — it won't be shown again.</p>
+        <div style="background:#f3f4f6;padding:14px;border-radius:8px;font-family:monospace;font-size:0.85rem;word-break:break-all;" id="generatedKey"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="copyKeyBtn">Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/js/shared.js"></script>
+  <script>
+    (function () {
+      let lastKey = '';
+
+      async function init() {
+        const user = await Shared.checkAuth();
+        if (!user) return;
+        if (user.role !== 'admin') { window.location.href = '/admin/'; return; }
+        await loadSidebar(user);
+        Shared.init();
+        loadApiKeys();
+        loadWebhooks();
+        loadSystemInfo();
+        setupEvents();
+      }
+
+      async function loadSidebar(user) {
+        const res = await fetch('/admin/components/sidebar.html');
+        document.getElementById('sidebar').outerHTML = await res.text();
+        document.querySelector('[data-page="settings"]')?.classList.add('active');
+        document.getElementById('logoutBtn')?.addEventListener('click', Shared.logout);
+        if (user) {
+          document.getElementById('userName').textContent = user.username;
+          document.getElementById('userEmail').textContent = user.email;
+          document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+          if (user.role === 'admin') {
+            document.getElementById('userRole').textContent = 'Administrator';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+          }
+        }
+      }
+
+      async function loadApiKeys() {
+        try {
+          const keys = await Shared.api('/api/settings/api-keys');
+          const list = document.getElementById('apiKeysList');
+          if (!keys || keys.length === 0) {
+            list.innerHTML = '<li style="color:#9ca3af;">No API keys yet.</li>';
+            return;
+          }
+          list.innerHTML = keys.map(k => `
+            <li class="key-item">
+              <div class="key-item-info">
+                <strong>${Shared.escapeHtml(k.name)}</strong>
+                <span class="key-prefix">${Shared.escapeHtml(k.keyPrefix)}</span>
+              </div>
+              <span style="font-size:0.8rem;color:#9ca3af;">${k.expiresAt ? 'Exp: ' + k.expiresAt.slice(0,10) : 'No expiry'}</span>
+              <button class="btn btn-sm btn-danger" data-revoke="${k.id}">Revoke</button>
+            </li>
+          `).join('');
+          list.querySelectorAll('[data-revoke]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (!confirm('Revoke this API key?')) return;
+              await Shared.api(`/api/settings/api-keys/${btn.dataset.revoke}`, { method: 'DELETE' });
+              loadApiKeys();
+              Shared.showToast('API key revoked');
+            });
+          });
+        } catch (e) {
+          document.getElementById('apiKeysList').innerHTML = '<li style="color:#ef4444;">Failed to load keys</li>';
+        }
+      }
+
+      async function loadWebhooks() {
+        try {
+          const webhooks = await Shared.api('/api/settings/webhooks');
+          const container = document.getElementById('webhooksList');
+          if (!webhooks || webhooks.length === 0) {
+            container.innerHTML = '<p style="color:#9ca3af;">No webhooks configured.</p>';
+            return;
+          }
+          container.innerHTML = webhooks.map(w => `
+            <div class="webhook-item">
+              <span class="webhook-url" title="${Shared.escapeHtml(w.url)}">${Shared.escapeHtml(w.name)} — ${Shared.escapeHtml(w.url)}</span>
+              <label class="toggle-switch" title="${w.enabled ? 'Enabled' : 'Disabled'}">
+                <input type="checkbox" ${w.enabled ? 'checked' : ''} data-webhook="${w.id}">
+                <span class="toggle-slider"></span>
+              </label>
+              <button class="btn btn-sm btn-danger" data-del-webhook="${w.id}">Delete</button>
+            </div>
+          `).join('');
+          container.querySelectorAll('[data-webhook]').forEach(input => {
+            input.addEventListener('change', async () => {
+              await Shared.api(`/api/settings/webhooks/${input.dataset.webhook}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ enabled: input.checked })
+              });
+              Shared.showToast('Webhook ' + (input.checked ? 'enabled' : 'disabled'));
+            });
+          });
+          container.querySelectorAll('[data-del-webhook]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (!confirm('Delete this webhook?')) return;
+              await Shared.api(`/api/settings/webhooks/${btn.dataset.delWebhook}`, { method: 'DELETE' });
+              loadWebhooks();
+              Shared.showToast('Webhook deleted');
+            });
+          });
+        } catch (e) {
+          document.getElementById('webhooksList').innerHTML = '<p style="color:#ef4444;">Failed to load webhooks</p>';
+        }
+      }
+
+      async function loadSystemInfo() {
+        try {
+          const info = await Shared.api('/api/settings/system/info');
+          document.getElementById('sysVersion').textContent = info.version || '-';
+          document.getElementById('sysDb').textContent = info.database || '-';
+          document.getElementById('sysUptime').textContent = formatUptime(info.uptime || 0);
+          document.getElementById('sysNode').textContent = info.nodeVersion || '-';
+        } catch (e) {}
+      }
+
+      function formatUptime(s) {
+        const d = Math.floor(s / 86400);
+        const h = Math.floor((s % 86400) / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        if (d > 0) return `${d}d ${h}h`;
+        if (h > 0) return `${h}h ${m}m`;
+        return `${m}m`;
+      }
+
+      function setupEvents() {
+        document.getElementById('createKeyBtn').addEventListener('click', () => {
+          document.getElementById('keyName').value = '';
+          Shared.openModal('createKeyModal');
+        });
+        document.getElementById('closeCreateKeyModal').addEventListener('click', () => Shared.closeModal('createKeyModal'));
+        document.getElementById('cancelCreateKeyBtn').addEventListener('click', () => Shared.closeModal('createKeyModal'));
+        document.getElementById('confirmCreateKeyBtn').addEventListener('click', createApiKey);
+
+        document.getElementById('closeShowKeyModal').addEventListener('click', () => Shared.closeModal('showKeyModal'));
+        document.getElementById('copyKeyBtn').addEventListener('click', () => {
+          navigator.clipboard.writeText(lastKey).catch(() => {});
+          Shared.showToast('Copied to clipboard');
+          Shared.closeModal('showKeyModal');
+        });
+
+        document.getElementById('addWebhookBtn').addEventListener('click', addWebhook);
+      }
+
+      async function createApiKey() {
+        const name = document.getElementById('keyName').value.trim();
+        if (!name) { Shared.showToast('Name is required', 'error'); return; }
+        try {
+          const result = await Shared.api('/api/settings/api-keys', {
+            method: 'POST',
+            body: JSON.stringify({ name })
+          });
+          Shared.closeModal('createKeyModal');
+          if (result && result.key) {
+            lastKey = result.key;
+            document.getElementById('generatedKey').textContent = result.key;
+            Shared.openModal('showKeyModal');
+          }
+          loadApiKeys();
+        } catch (e) { Shared.showToast('Failed to create key', 'error'); }
+      }
+
+      async function addWebhook() {
+        const name = document.getElementById('webhookName').value.trim();
+        const url  = document.getElementById('webhookUrl').value.trim();
+        if (!name || !url) { Shared.showToast('Name and URL are required', 'error'); return; }
+        try {
+          await Shared.api('/api/settings/webhooks', {
+            method: 'POST',
+            body: JSON.stringify({ name, url })
+          });
+          document.getElementById('webhookName').value = '';
+          document.getElementById('webhookUrl').value = '';
+          loadWebhooks();
+          Shared.showToast('Webhook added');
+        } catch (e) { Shared.showToast('Failed to add webhook', 'error'); }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

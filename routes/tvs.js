@@ -25,6 +25,7 @@ const createTVSchema = z.object({
   location: z.string().optional(),
   cycleIntervalSeconds: z.number().int().min(1).max(3600).default(10),
   isActive: z.boolean().default(true),
+  showEmergency: z.boolean().default(true),
 });
 
 const updateTVSchema = z.object({
@@ -32,6 +33,7 @@ const updateTVSchema = z.object({
   location: z.string().optional(),
   cycleIntervalSeconds: z.number().int().min(1).max(3600).optional(),
   isActive: z.boolean().optional(),
+  showEmergency: z.boolean().optional(),
 });
 
 const createItemSchema = z.object({
@@ -73,7 +75,7 @@ router.get('/', requireAuthOrApiKey, (req, res) => {
         GROUP BY t.id ORDER BY t.createdAt DESC
       `).all(req.session.userId);
 
-  res.json(tvs.map(tv => ({ ...tv, isActive: !!tv.isActive })));
+  res.json(tvs.map(tv => ({ ...tv, isActive: !!tv.isActive, showEmergency: !!tv.showEmergency })));
 });
 
 // POST /api/tvs
@@ -82,17 +84,17 @@ router.post('/', requireAdmin, (req, res) => {
   if (!result.success)
     return errorResponse(res, 400, 'VALIDATION_ERROR', 'Invalid input', result.error.flatten().fieldErrors);
 
-  const { name, slug: rawSlug, location, cycleIntervalSeconds, isActive } = result.data;
+  const { name, slug: rawSlug, location, cycleIntervalSeconds, isActive, showEmergency } = result.data;
   const slug = uniqueSlug(rawSlug || slugify(name));
   const displayToken = generateToken(32);
 
   const info = db.prepare(
-    'INSERT INTO tvs (name, slug, location, cycleIntervalSeconds, isActive, displayToken) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(name, slug, location || null, cycleIntervalSeconds, isActive ? 1 : 0, displayToken);
+    'INSERT INTO tvs (name, slug, location, cycleIntervalSeconds, isActive, showEmergency, displayToken) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(name, slug, location || null, cycleIntervalSeconds, isActive ? 1 : 0, showEmergency ? 1 : 0, displayToken);
 
   const tv = db.prepare('SELECT * FROM tvs WHERE id = ?').get(info.lastInsertRowid);
   logAudit(req.session.userId, 'tv.created', 'tv', tv.id, { name, slug }, getClientIp(req));
-  res.status(201).json({ ...tv, isActive: !!tv.isActive });
+  res.status(201).json({ ...tv, isActive: !!tv.isActive, showEmergency: !!tv.showEmergency });
 });
 
 // GET /api/tvs/:id
@@ -132,6 +134,7 @@ router.get('/:id', requireAuthOrApiKey, requireTVAccess, (req, res) => {
   res.json({
     ...tv,
     isActive: !!tv.isActive,
+    showEmergency: !!tv.showEmergency,
     items: items.map(i => ({ ...i, isActive: !!i.isActive })),
     access,
   });
@@ -156,13 +159,14 @@ router.patch('/:id', requireAdmin, (req, res) => {
   if (data.location !== undefined)            { updates.push('location = ?');            params.push(data.location); }
   if (data.cycleIntervalSeconds !== undefined){ updates.push('cycleIntervalSeconds = ?'); params.push(data.cycleIntervalSeconds); }
   if (data.isActive !== undefined)            { updates.push('isActive = ?');            params.push(data.isActive ? 1 : 0); }
+  if (data.showEmergency !== undefined)       { updates.push('showEmergency = ?');       params.push(data.showEmergency ? 1 : 0); }
   updates.push("updatedAt = datetime('now')");
   params.push(req.params.id);
 
   db.prepare(`UPDATE tvs SET ${updates.join(', ')} WHERE id = ?`).run(...params);
   const updated = db.prepare('SELECT * FROM tvs WHERE id = ?').get(req.params.id);
   logAudit(req.session.userId, 'tv.updated', 'tv', updated.id, data, getClientIp(req));
-  res.json({ ...updated, isActive: !!updated.isActive });
+  res.json({ ...updated, isActive: !!updated.isActive, showEmergency: !!updated.showEmergency });
 });
 
 // DELETE /api/tvs/:id

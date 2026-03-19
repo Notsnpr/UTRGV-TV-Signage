@@ -22,6 +22,10 @@ router.get('/tv/:displayToken', (req, res) => {
     ORDER BY i.sortOrder ASC, i.id ASC
   `).all(tv.id, now, now);
 
+  const emergencyAlert = tv.showEmergency
+    ? db.prepare('SELECT * FROM emergency_alerts WHERE active = 1 ORDER BY createdAt DESC LIMIT 1').get() || null
+    : null;
+
   res.json({
     id: tv.id,
     name: tv.name,
@@ -29,6 +33,7 @@ router.get('/tv/:displayToken', (req, res) => {
     location: tv.location,
     cycleIntervalSeconds: tv.cycleIntervalSeconds,
     items,
+    emergencyAlert: emergencyAlert ? { ...emergencyAlert, active: true } : null,
   });
 });
 

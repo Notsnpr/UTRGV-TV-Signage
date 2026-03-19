@@ -77,6 +77,15 @@
     #tvInfo.visible { opacity: 1; transform: translateY(0); }
     #tvInfo h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
     #tvInfo p { opacity: .7; font-size: 12px; }
+
+    #emergencyAlert {
+      position: fixed; inset: 0; z-index: 500;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px;
+    }
+    #emergencyAlert.hidden { display: none; }
+    #emergencyTitle { font-size: 48px; font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
+    #emergencyMessage { font-size: 28px; font-weight: 400; opacity: .9; max-width: 800px; }
   </style>
 </head>
 <body>
@@ -103,6 +112,11 @@
     <p>Loading...</p>
   </div>
 
+  <div id="emergencyAlert" class="hidden">
+    <div id="emergencyTitle"></div>
+    <div id="emergencyMessage"></div>
+  </div>
+
   <div id="error" class="hidden">
     <div class="error-icon">😕</div>
     <h2>Something went wrong</h2>
@@ -110,5 +124,10 @@
   </div>
 
   <script src="/player.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
 </body>
 </html>

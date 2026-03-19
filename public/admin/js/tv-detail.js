@@ -247,10 +247,12 @@
     const location = document.getElementById('editLocation').value.trim();
     const interval = parseInt(document.getElementById('editInterval').value);
     const isActive = document.getElementById('editIsActive').checked;
+    const showEmergency = document.getElementById('editShowEmergency').checked;
     if (name) body.name = name;
     if (location !== undefined) body.location = location;
     if (!isNaN(interval)) body.cycleIntervalSeconds = interval;
     body.isActive = isActive;
+    body.showEmergency = showEmergency;
     try {
       await Shared.api(`/api/tvs/${tvId}`, { method: 'PATCH', body: JSON.stringify(body) });
       Shared.closeModal('editTVModal');
@@ -316,6 +318,7 @@
         document.getElementById('editLocation').value = tv.location || '';
         document.getElementById('editInterval').value = tv.cycleIntervalSeconds;
         document.getElementById('editIsActive').checked = tv.isActive;
+        document.getElementById('editShowEmergency').checked = !!tv.showEmergency;
         Shared.openModal('editTVModal');
       });
       document.getElementById('closeEditTV').addEventListener('click', () => Shared.closeModal('editTVModal'));

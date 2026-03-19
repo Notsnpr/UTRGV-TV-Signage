@@ -7,13 +7,13 @@
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Red Hat Display', system-ui, sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #CB4900 0%, #a63c00 100%);
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .auth-container { width: 100%; max-width: 420px; }
@@ -27,7 +27,7 @@
     .logo-icon { font-size: 48px; margin-bottom: 8px; }
     .logo h1 {
       font-size: 28px; font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #CB4900 0%, #a63c00 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
     .logo p { color: #6b7280; font-size: 14px; margin-top: 4px; }
@@ -37,15 +37,15 @@
       width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb;
       border-radius: 12px; font-family: inherit; font-size: 15px; transition: all .2s; outline: none;
     }
-    .form-group input:focus { border-color: #667eea; box-shadow: 0 0 0 4px rgba(102,126,234,.1); }
+    .form-group input:focus { border-color: #CB4900; box-shadow: 0 0 0 4px rgba(203,73,0,.1); }
     .form-group input::placeholder { color: #9ca3af; }
     .submit-btn {
       width: 100%; padding: 16px; border: none; border-radius: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #CB4900 0%, #a63c00 100%);
       color: white; font-family: inherit; font-size: 16px; font-weight: 600;
       cursor: pointer; transition: all .2s; margin-top: 8px;
     }
-    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,.3); }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(203,73,0,.3); }
     .submit-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; }
     .error-message {
       background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
@@ -60,8 +60,8 @@
   <div class="auth-container">
     <div class="auth-card">
       <div class="logo">
-        <div class="logo-icon">📺</div>
-        <h1>UTRGV TV Signage</h1>
+        <div class="logo-icon" style="font-size:2rem;font-weight:700;letter-spacing:-1px;">UTRGV</div>
+        <h1>TV Signage</h1>
         <p>Digital signage management</p>
       </div>
       <div id="errorMessage" class="error-message"></div>

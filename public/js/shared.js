@@ -117,7 +117,19 @@ const Shared = (function() {
       const href = btn.getAttribute('href') || btn.dataset.page;
       if (href && path.includes(href.replace('.html', ''))) btn.classList.add('active');
     });
+
   }
+
+  // Mobile sidebar toggle — event delegation so it works after dynamic sidebar injection
+  document.addEventListener('click', e => {
+    if (e.target.closest('#sidebarToggle')) {
+      document.body.classList.toggle('sidebar-open');
+    } else if (e.target.closest('#sidebarOverlay')) {
+      document.body.classList.remove('sidebar-open');
+    } else if (e.target.closest('.nav-link')) {
+      document.body.classList.remove('sidebar-open');
+    }
+  });
 
   return { checkAuth, getUser, isAdmin, showToast, api, escapeHtml, formatDate, formatRelativeTime, logout, openModal, closeModal, init };
 })();

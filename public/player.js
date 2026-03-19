@@ -1,16 +1,19 @@
 // UTRGV TV Player
 (function() {
-  const playerEl    = document.getElementById('player');
-  const overlay     = document.getElementById('overlay');
-  const startBtn    = document.getElementById('startBtn');
-  const loadingEl   = document.getElementById('loading');
-  const errorEl     = document.getElementById('error');
-  const errorMsgEl  = document.getElementById('errorMessage');
-  const progressEl  = document.getElementById('progress');
-  const progressBar = document.getElementById('progressBar');
-  const tvInfo      = document.getElementById('tvInfo');
-  const tvNameEl    = document.getElementById('tvName');
-  const itemInfoEl  = document.getElementById('itemInfo');
+  const playerEl         = document.getElementById('player');
+  const overlay          = document.getElementById('overlay');
+  const startBtn         = document.getElementById('startBtn');
+  const loadingEl        = document.getElementById('loading');
+  const errorEl          = document.getElementById('error');
+  const errorMsgEl       = document.getElementById('errorMessage');
+  const progressEl       = document.getElementById('progress');
+  const progressBar      = document.getElementById('progressBar');
+  const tvInfo           = document.getElementById('tvInfo');
+  const tvNameEl         = document.getElementById('tvName');
+  const itemInfoEl       = document.getElementById('itemInfo');
+  const emergencyAlertEl = document.getElementById('emergencyAlert');
+  const emergencyTitleEl = document.getElementById('emergencyTitle');
+  const emergencyMsgEl   = document.getElementById('emergencyMessage');
 
   let tv = null;
   let items = [];
@@ -19,6 +22,7 @@
   let progressInterval = null;
   let isPlaying = false;
   let infoTimeout = null;
+  let currentEmergency = null;
 
   function getToken() {
     return new URLSearchParams(window.location.search).get('token');
@@ -35,6 +39,18 @@
     errorEl.querySelector('h2').textContent = title;
     errorMsgEl.textContent = msg;
     errorEl.classList.remove('hidden');
+  }
+
+  function showEmergency(alert) {
+    emergencyAlertEl.style.background = alert.bgColor || '#dc2626';
+    emergencyAlertEl.style.color      = alert.textColor || '#ffffff';
+    emergencyTitleEl.textContent       = alert.title;
+    emergencyMsgEl.textContent         = alert.message;
+    emergencyAlertEl.classList.remove('hidden');
+  }
+
+  function clearEmergency() {
+    emergencyAlertEl.classList.add('hidden');
   }
 
   function showInfo() {
@@ -153,6 +169,15 @@
   async function refreshTV() {
     const fresh = await fetchTV();
     if (!fresh) return;
+
+    // Handle emergency alert changes
+    const emergencyChanged = JSON.stringify(fresh.emergencyAlert) !== JSON.stringify(currentEmergency);
+    if (emergencyChanged) {
+      currentEmergency = fresh.emergencyAlert;
+      if (currentEmergency) showEmergency(currentEmergency);
+      else clearEmergency();
+    }
+
     const changed = JSON.stringify(fresh.items) !== JSON.stringify(items);
     if (changed) {
       tv = fresh;
@@ -196,6 +221,10 @@
     loadingEl.classList.add('hidden');
     items = tv.items;
     tvNameEl.textContent = tv.name;
+
+    // Show emergency overlay if one is active on load
+    currentEmergency = tv.emergencyAlert || null;
+    if (currentEmergency) showEmergency(currentEmergency);
 
     setInterval(refreshTV, 30000);
 

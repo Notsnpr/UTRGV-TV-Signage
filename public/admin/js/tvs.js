@@ -48,15 +48,17 @@
     const location = document.getElementById('tvLocation').value.trim();
     const interval = parseInt(document.getElementById('tvInterval').value) || 10;
     if (!name) return Shared.showToast('Name is required', 'error');
+    const showEmergency = document.getElementById('tvShowEmergency').checked;
     try {
       await Shared.api('/api/tvs', {
         method: 'POST',
-        body: JSON.stringify({ name, location: location || undefined, cycleIntervalSeconds: interval }),
+        body: JSON.stringify({ name, location: location || undefined, cycleIntervalSeconds: interval, showEmergency }),
       });
       Shared.closeModal('addTVModal');
       document.getElementById('tvName').value = '';
       document.getElementById('tvLocation').value = '';
       document.getElementById('tvInterval').value = '10';
+      document.getElementById('tvShowEmergency').checked = true;
       await loadTVs();
       Shared.showToast('TV created', 'success');
     } catch (e) {}
