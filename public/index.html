@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfdDJMsAAAAAHluaBUckrIr1UHTHDgERaUKC2xy"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -92,6 +93,7 @@
       btn.disabled = true; btn.textContent = 'Signing in...';
       errorMsg.classList.remove('show');
       try {
+        const recaptchaToken = await grecaptcha.execute('6LfdDJMsAAAAAHluaBUckrIr1UHTHDgERaUKC2xy', { action: 'login' });
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -99,6 +101,7 @@
           body: JSON.stringify({
             email: document.getElementById('loginEmail').value,
             password: document.getElementById('loginPassword').value,
+            recaptchaToken,
           }),
         });
         const data = await res.json();
